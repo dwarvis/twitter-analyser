@@ -19,6 +19,7 @@ public class TwitterGUIController {
     {
         // Connects to Twitter and performs authorizations.
         twitter = TwitterFactory.getSingleton();
+        
         statuses = new ArrayList<Status>();
         terms = new ArrayList<String>();
         frequentWords = new HashMap<>();
