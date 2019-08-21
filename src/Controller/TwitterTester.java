@@ -7,8 +7,6 @@ import java.io.PrintStream;
 import java.util.Scanner;
 
 public class TwitterTester {
-    private PrintStream consolePrint;
-    private String twitterHandleToSearch;
     private TwitterGUIController myClient;
 
     public TwitterTester()
