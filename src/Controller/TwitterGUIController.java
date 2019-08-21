@@ -10,7 +10,7 @@ import java.io.PrintStream;
 public class TwitterGUIController {
     private Twitter twitter;
     private List<Status> statuses;
-    private List<String> terms;
+    private List<String> tokens;
     private Map<String, Integer> frequentWords;
     private String popularWord;
     private int frequencyMax;
@@ -21,7 +21,7 @@ public class TwitterGUIController {
         twitter = TwitterFactory.getSingleton();
         
         statuses = new ArrayList<Status>();
-        terms = new ArrayList<String>();
+        tokens = new ArrayList<String>();
         frequentWords = new HashMap<>();
     }
 
@@ -41,15 +41,13 @@ public class TwitterGUIController {
 
     public void findUserStats(String handle) throws TwitterException, IOException
     {
-        statuses.clear();
-        terms.clear();
-        frequentWords.clear();
-
-        fetchTweets(handle);
-        splitIntoWords();
-        removeCommonEnglishWords();
-        countAndRemoveEmpties();
-        findMostPopularWord();
+        /* 
+         * TODO 9: you put it all together here. Call the functions you
+         * finished in TODO's 2-8. They have to be in the correct order for the
+         * program to work. 
+         * Remember to user.clear() so that consecutive requests dont count 
+         * words from previous requests. 
+         */
     }
 
     // Example query with paging and file output.
@@ -87,32 +85,43 @@ public class TwitterGUIController {
 
                         /********** PART 2 *********/
 
-    //TODO 2: this method splits a whole status into different words.
+    /*
+     * TODO 2: this method splits a whole status into different words. Each word
+     * is considered a token. Store each token in the "tokens" arrayList
+     * provided.
+     */
     private void splitIntoWords()
     {
 
     }
 
 
-    //TODO 3: return a word after removing any punctuation from it.
-    //If the word is "Edwin!!", this method should return "Edwin"
+    /* 
+     * TODO 3: return a word after removing any punctuation from it.
+     * If the word is "Edwin!!", this method should return "Edwin".
+     * We'll need this method later on.
+     */
     @SuppressWarnings("unchecked")
     private String removePunctuation(String word)
     {
         return "";
     }
 
-    //TODO 4: remove all the words that are found in the commonWords.txt file.
+    /*
+     * TODO 4: remove all the words that are found in the commonWords.txt file.
+     * You can use a new list or update the "tokens" List. Make sure to
+     * remove punctuation before checking if its a common english word.
+     */
     @SuppressWarnings("unchecked")
     private void removeCommonEnglishWords()
     {
 
-
-
     }
 
-    //TODO 5: count each word using. Use the frequentWords Hashmap.
-    //TODO 6: remove any empty strings.
+    /* 
+     * TODO 5: count each word using. Use the frequentWords Hashmap.
+     * make sure to remove any empty strings like "" or " ". 
+     */
     @SuppressWarnings("unchecked")
     private void countAndRemoveEmpties()
     {
@@ -121,17 +130,17 @@ public class TwitterGUIController {
 
     }
 
-    //TODO 7: find the most popular word and store the string and frequency.
-    //It is up to you to check for case sensitivity.
+    /*
+     * TODO 6: find the most popular word and store the string and frequency.
+     * It is up to you to check for case sensitivity.
+     */
     @SuppressWarnings("unchecked")
     private void findMostPopularWord()
     {
 
-
-
     }
 
-    //TODO 8: return the most frequent word's string
+    //TODO 7: return the most frequent word's string
     @SuppressWarnings("unchecked")
     public String getMostPopularWord()
     {
@@ -139,7 +148,7 @@ public class TwitterGUIController {
 
     }
 
-    //TODO 9: return the most frequent word's count.
+    //TODO 8: return the most frequent word's count.
     @SuppressWarnings("unchecked")
     public int getFrequencyMax()
     {
@@ -150,7 +159,12 @@ public class TwitterGUIController {
     /*********** PART 3 **********/
 
     //TODO 10: Create your own method that provides any service you want.
-    //TODO 11: HL -> You have to use atleast TWO more twitter methods, other than Query, in your investigation.
+    
+    /*
+     * TODO 11: HL -> You have to use atleast TWO more twitter methods, 
+     * other than Query, in your investigation. If you want full points, 
+     * record in your README why this method is sufficiently complex.
+     */
 
     // Example: A method that returns 100 tweets from keyword(s).
     public List<Status> searchKeywords(String keywords)
