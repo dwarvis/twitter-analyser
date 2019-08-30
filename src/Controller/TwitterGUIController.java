@@ -92,7 +92,9 @@ public class TwitterGUIController {
      */
     private void splitIntoWords()
     {
-
+        for (int i = 0; i<statuses.size();i++){
+            System.out.println(statuses.get(i+1));
+        }
     }
 
 
