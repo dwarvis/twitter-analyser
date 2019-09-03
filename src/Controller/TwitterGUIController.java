@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.io.PrintStream;
+import java.io.*;
 
 public class TwitterGUIController {
     private Twitter twitter;
@@ -48,6 +49,9 @@ public class TwitterGUIController {
          * Remember to user.clear() so that consecutive requests dont count 
          * words from previous requests. 
          */
+        fetchTweets(handle);
+        splitIntoWords();
+        
     }
 
     // Example query with paging and file output.
@@ -92,8 +96,13 @@ public class TwitterGUIController {
      */
     private void splitIntoWords()
     {
-        for (int i = 0; i<statuses.size();i++){
-            System.out.println(statuses.get(i+1));
+        for (int i = 0; i < statuses.size(); i++) {
+            String SplitBySpaces = statuses.get(i).getText();
+            List<String> indivudualWords = 
+            new ArrayList<String>(Arrays.asList(SplitBySpaces.split("\\s+")));
+            for (int e = 0; e < indivudualWords.size(); e++) {
+                tokens.add(indivudualWords.get(e));
+            }
         }
     }
 
@@ -106,7 +115,9 @@ public class TwitterGUIController {
     @SuppressWarnings("unchecked")
     private String removePunctuation(String word)
     {
-        return "";
+        String editedWord = word;
+        editedWord.replaceAll("[^a-zA-Z ]", "");
+        return editedWord;
     }
 
     /*
@@ -117,7 +128,10 @@ public class TwitterGUIController {
     @SuppressWarnings("unchecked")
     private void removeCommonEnglishWords()
     {
-
+        File file = new File("/Users/davischeng/NetBeansProjects/problem-set-1-"
+                + "twitter-analysis-dwarvis/commonWords.txt"); 
+  
+         BufferedReader br = new BufferedReader(new FileReader(file));
     }
 
     /* 
@@ -147,7 +161,6 @@ public class TwitterGUIController {
     public String getMostPopularWord()
     {
         return "";
-
     }
 
     //TODO 8: return the most frequent word's count.
