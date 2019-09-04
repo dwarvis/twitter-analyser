@@ -100,7 +100,7 @@ public class TwitterGUIController {
             String SplitBySpaces = statuses.get(i).getText();
             List<String> indivudualWords = 
             new ArrayList<String>(Arrays.asList(SplitBySpaces.split("\\s+")));
-            for (int e = 0; e < indivudualWords.size(); e++) {
+            for (int e = 0; e < indivudualWords.size()-1; e++) {
                 tokens.add(indivudualWords.get(e));
             }
         }
@@ -115,8 +115,11 @@ public class TwitterGUIController {
     @SuppressWarnings("unchecked")
     private String removePunctuation(String word)
     {
+//      I actually removed spaces and changed all letters to lowecase here
+//      instead of in those other TODOs
         String editedWord = word;
         editedWord.replaceAll("[^a-zA-Z ]", "");
+        editedWord.toLowerCase();
         return editedWord;
     }
 
@@ -128,10 +131,43 @@ public class TwitterGUIController {
     @SuppressWarnings("unchecked")
     private void removeCommonEnglishWords()
     {
-        File file = new File("/Users/davischeng/NetBeansProjects/problem-set-1-"
-                + "twitter-analysis-dwarvis/commonWords.txt"); 
+        File wordsFile = new File("commonWords.txt"); 
   
-         BufferedReader br = new BufferedReader(new FileReader(file));
+//      BufferedReader br = new BufferedReader(new FileReader(commonWordsFile));
+//        
+        try
+        {
+            BufferedReader br = new BufferedReader(new FileReader(wordsFile));
+            List <String> commonWordsList = new ArrayList<String>();
+            LineNumberReader lnr = new LineNumberReader(br);
+            while (lnr.readLine() != null){
+    	        commonWordsList.add(lnr.readLine());
+    	    }
+
+            for (int i = 0; i < tokens.size()-1; i++) {
+                for (int e = 0; e < commonWordsList.size(); e++) {
+                    if (commonWordsList.get(e) == tokens.get(i)) {
+                        tokens.remove(i);
+                        i--;
+                    }
+                }
+            }
+//            Make sure to write the rest of you code in here, anything outside 
+//            of these brackets is out of scope. 
+        }
+        catch(Exception err)
+        {
+            err.printStackTrace();
+            if (!wordsFile.exists()) {
+                System.err.println("File doesn't exist");
+            }
+            if (wordsFile.isDirectory()) {
+                System.err.println("File is directory");
+            }
+            if (!wordsFile.canRead()) {
+                System.err.println("File cannot be read");
+            }
+        }  
     }
 
     /* 
@@ -141,9 +177,17 @@ public class TwitterGUIController {
     @SuppressWarnings("unchecked")
     private void countAndRemoveEmpties()
     {
-
-
-
+//  my remove punctuation function already removes spaces i think
+        for (int i = 0; i < tokens.size()-1; i++) {
+            if (!frequentWords.containsKey(tokens.get(i))) {
+                frequentWords.put(tokens.get(i),1);
+            }
+            else {
+                frequentWords.put (
+                tokens.get(i),
+                frequentWords.get(tokens.get(i)) + 1);
+            }
+        }
     }
 
     /*
