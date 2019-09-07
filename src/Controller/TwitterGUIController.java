@@ -12,6 +12,7 @@ public class TwitterGUIController {
     private Twitter twitter;
     private List<Status> statuses;
     private List<String> tokens;
+    private List<String> tempTokens;
     private Map<String, Integer> frequentWords;
     private String popularWord;
     private int frequencyMax;
@@ -20,9 +21,9 @@ public class TwitterGUIController {
     {
         // Connects to Twitter and performs authorizations.
         twitter = TwitterFactory.getSingleton();
-        
         statuses = new ArrayList<Status>();
         tokens = new ArrayList<String>();
+        tempTokens = new ArrayList<String>();
         frequentWords = new HashMap<>();
     }
 
@@ -51,7 +52,14 @@ public class TwitterGUIController {
          */
         fetchTweets(handle);
         splitIntoWords();
-        
+        for (int i = 0; i < tokens.size(); i++) {
+            tempTokens.add(removePunctuation(tokens.get(i)));
+        }
+        tokens = tempTokens;
+        removeCommonEnglishWords();
+        countAndRemoveEmpties();
+        findMostPopularWord();
+        System.out.println(tokens);
     }
 
     // Example query with paging and file output.
@@ -118,8 +126,9 @@ public class TwitterGUIController {
 //      I actually removed spaces and changed all letters to lowecase here
 //      instead of in those other TODOs
         String editedWord = word;
-        editedWord.replaceAll("[^a-zA-Z ]", "");
-        editedWord.toLowerCase();
+        editedWord = editedWord.replaceAll("[^a-zA-Z ]", "");
+        editedWord = editedWord.replaceAll("\\s+","");
+        editedWord = editedWord.toLowerCase();
         return editedWord;
     }
 
@@ -137,23 +146,19 @@ public class TwitterGUIController {
 //        
         try
         {
-            BufferedReader br = new BufferedReader(new FileReader(wordsFile));
+            Scanner br = new Scanner(new FileReader(wordsFile));
             List <String> commonWordsList = new ArrayList<String>();
-            LineNumberReader lnr = new LineNumberReader(br);
-            while (lnr.readLine() != null){
-    	        commonWordsList.add(lnr.readLine());
+            while (br.hasNext()){
+    	        commonWordsList.add(br.next());
     	    }
 
-            for (int i = 0; i < tokens.size()-1; i++) {
-                for (int e = 0; e < commonWordsList.size(); e++) {
-                    if (commonWordsList.get(e) == tokens.get(i)) {
-                        tokens.remove(i);
-                        i--;
-                    }
+            for (int i = 0; i < tokens.size(); i++) {
+                if (commonWordsList.contains(tokens.get(i))) {
+                    tokens.remove(i);
+                    i--;
                 }
             }
-//            Make sure to write the rest of you code in here, anything outside 
-//            of these brackets is out of scope. 
+            System.out.println(commonWordsList);
         }
         catch(Exception err)
         {
@@ -179,13 +184,15 @@ public class TwitterGUIController {
     {
 //  my remove punctuation function already removes spaces i think
         for (int i = 0; i < tokens.size()-1; i++) {
-            if (!frequentWords.containsKey(tokens.get(i))) {
-                frequentWords.put(tokens.get(i),1);
-            }
-            else {
-                frequentWords.put (
-                tokens.get(i),
-                frequentWords.get(tokens.get(i)) + 1);
+            if (!tokens.get(i).isEmpty()) {
+                if (!frequentWords.containsKey(tokens.get(i))) {
+                    frequentWords.put(tokens.get(i),1);
+                }
+                else {
+                    frequentWords.put (
+                    tokens.get(i),
+                    frequentWords.get(tokens.get(i)) + 1);
+                }
             }
         }
     }
@@ -197,21 +204,26 @@ public class TwitterGUIController {
     @SuppressWarnings("unchecked")
     private void findMostPopularWord()
     {
-
+        for (Map.Entry<String, Integer> entry : frequentWords.entrySet()) {
+            if (entry.getValue() > frequencyMax) {
+                frequencyMax = entry.getValue();
+                popularWord = entry.getKey();
+            }
+        }
     }
 
     //TODO 7: return the most frequent word's string
     @SuppressWarnings("unchecked")
     public String getMostPopularWord()
     {
-        return "";
+        return removePunctuation(popularWord);
     }
 
     //TODO 8: return the most frequent word's count.
     @SuppressWarnings("unchecked")
     public int getFrequencyMax()
     {
-        return 0;
+        return frequencyMax;
     }
 
 
