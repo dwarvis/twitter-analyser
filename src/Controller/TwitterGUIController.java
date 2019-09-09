@@ -1,5 +1,6 @@
 package Controller;
 
+import java.awt.Cursor;
 import twitter4j.*;
 
 import java.io.FileOutputStream;
@@ -7,15 +8,24 @@ import java.io.IOException;
 import java.util.*;
 import java.io.PrintStream;
 import java.io.*;
+import twitter4j.auth.AccessToken;
+import twitter4j.Relationship;
 
 public class TwitterGUIController {
     private Twitter twitter;
     private List<Status> statuses;
+    private List<Place> places;
     private List<String> tokens;
     private List<String> tempTokens;
     private Map<String, Integer> frequentWords;
     private String popularWord;
     private int frequencyMax;
+    private List media;
+    private List<HashtagEntity> hashtags;
+    private List<String> hashtagText;
+    private Map<String, Integer> frequentHashtags;
+    private User userA;
+    private User userB;
 
     public TwitterGUIController()
     {
@@ -50,6 +60,8 @@ public class TwitterGUIController {
          * Remember to user.clear() so that consecutive requests dont count 
          * words from previous requests. 
          */
+        frequencyMax = 0;
+        tokens.clear();
         fetchTweets(handle);
         splitIntoWords();
         for (int i = 0; i < tokens.size(); i++) {
@@ -59,7 +71,6 @@ public class TwitterGUIController {
         removeCommonEnglishWords();
         countAndRemoveEmpties();
         findMostPopularWord();
-        System.out.println(tokens);
     }
 
     // Example query with paging and file output.
@@ -183,7 +194,7 @@ public class TwitterGUIController {
     private void countAndRemoveEmpties()
     {
 //  my remove punctuation function already removes spaces i think
-        for (int i = 0; i < tokens.size()-1; i++) {
+        for (int i = 0; i < tokens.size(); i++) {
             if (!tokens.get(i).isEmpty()) {
                 if (!frequentWords.containsKey(tokens.get(i))) {
                     frequentWords.put(tokens.get(i),1);
@@ -216,7 +227,7 @@ public class TwitterGUIController {
     @SuppressWarnings("unchecked")
     public String getMostPopularWord()
     {
-        return removePunctuation(popularWord);
+        return popularWord.replace(":", "");
     }
 
     //TODO 8: return the most frequent word's count.
@@ -230,30 +241,120 @@ public class TwitterGUIController {
     /*********** PART 3 **********/
 
     //TODO 10: Create your own method that provides any service you want.
+    public void getHashtagsFrom(String handle)
+    throws TwitterException, IOException
+    {
+        frequencyMax = 0;
+        tokens.clear();
+        fetchTweets(handle);
+        splitIntoWords();
+        removeNonHashtags();
+        countAndRemoveEmpties();
+        findMostPopularWord();
+    }
     
+    private void removeNonHashtags() //remove all non hashtag tokens
+    {
+        for (int i = 0; i < tokens.size(); i++) 
+        {
+            if (!tokens.get(i).contains("#")) 
+            {
+                tokens.remove(i);
+                i--;
+            }
+        }
+    }
     /*
      * TODO 11: HL -> You have to use atleast TWO more twitter methods, 
      * other than Query, in your investigation. If you want full points, 
      * record in your README why this method is sufficiently complex.
      */
-
-    // Example: A method that returns 100 tweets from keyword(s).
-    public List<Status> searchKeywords(String keywords)
+    public void getMentionsFrom(String handle)
+    throws TwitterException, IOException
     {
-        Query query = new Query(keywords);
-        query.setCount(100);
-        query.setSince("2015-12-1");
-        List<Status> searchResults = new ArrayList<>();
-        try
-        {
-            QueryResult result = twitter.search(query);
-            searchResults = result.getTweets();
-        }
-        catch (TwitterException e)
-        {
-            e.printStackTrace();
-        }
-        return searchResults;
+        frequencyMax = 0;
+        tokens.clear();
+        fetchTweets(handle);
+        splitIntoWords();
+        removeNonMentions();
+        countAndRemoveEmpties();
+        findMostPopularWord();
     }
-}
+    private void removeNonMentions() //remove all non mention tokens
+    {
+        for (int i = 0; i < tokens.size(); i++) 
+        {
+            if (!tokens.get(i).contains("@")) 
+            {
+                tokens.remove(i);
+                i--;
+            }
+        }
+    }
+    
+    public void getMutualFollow(String handle, String handle2)
+    throws TwitterException, IOException
+    {
+        fetchUsers(handle, handle2);
+    }
+    
+    private void fetchUsers(String tagA, String tagB) 
+    throws TwitterException, IOException 
+    {
+        userA = twitter.getUserTimeline(tagA).get(0).getUser();
+        userB = twitter.getUserTimeline(tagB).get(0).getUser();
+    }
+    
+    public List<String> mutualConnections()
+    {
+        
+        try 
+        {
+            //get followers and followed
+            List<Long> friendsList = new ArrayList<>();
+            long cursor = -1;
+            boolean hasNext = true;
+            while (hasNext) {
+                IDs friendsA = twitter.getFriendsIDs(userA.getId(), cursor);
+                for (long friend : friendsA.getIDs()) {
+                    friendsList.add(friend);
+                }
+                cursor = friendsA.getNextCursor();
+                hasNext = friendsA.hasNext();
+            }
+
+            List<Long> friendsBList = new ArrayList<>();
+            cursor = -1;
+            hasNext = true;
+            while (hasNext) {
+                IDs friendsB = twitter.getFriendsIDs(userB.getId(), cursor);
+                for (long friend : friendsB.getIDs()) {
+                    friendsBList.add(friend);
+                }
+                cursor = friendsB.getNextCursor();
+                hasNext = friendsB.hasNext();
+            }
+
+            List<Long> equalFriends = new ArrayList<>();
+
+            // Get intersection
+            friendsList.retainAll(friendsBList); 
+            //https://docs.oracle.com/javase/7/docs/api/java/util/Set.html
+
+            // Convert IDs to names
+            List<String> friendNames = new ArrayList<>();
+            for (long friendID : friendsList) {
+                User friend = twitter.showUser(friendID);
+                String friendName = friend.getScreenName();
+                friendNames.add(friendName);
+            }
+            return friendNames;
+        } 
+        catch (TwitterException e) 
+        {
+            System.err.println("Twitter is down");
+            return null;
+        }
+    }
+}   
 
