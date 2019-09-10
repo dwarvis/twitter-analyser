@@ -22,7 +22,8 @@ public class TwitterTester {
         myReader = new Scanner(System.in);
         String message = myReader.nextLine();
 
-        //send message string to client, if successfull a sentStatus will be returned.
+        //send message string to client, if successfull a sentStatus will be 
+        //returned.
         //print the sent status message
         String sentStatus = myClient.postTweet(message);
         System.out.println("Message sent: " + sentStatus);
