@@ -343,7 +343,9 @@ public class TwitterGUIController {
 
             // Convert IDs to names
             List<String> friendNames = new ArrayList<>();
-            for (long friendID : friendsList) {
+            for (long friendID : friendsList) 
+            {
+//                User friend = twitter.showUser(friendID);
                 User friend = twitter.showUser(friendID);
                 String friendName = friend.getScreenName();
                 friendNames.add(friendName);
@@ -356,5 +358,4 @@ public class TwitterGUIController {
             return null;
         }
     }
-}   
-
+}
