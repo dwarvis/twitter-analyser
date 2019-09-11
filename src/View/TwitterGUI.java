@@ -97,6 +97,7 @@ public class TwitterGUI extends javax.swing.JFrame {
             try
             {
                 myClient.findUserStats(requestTextField.getText());
+//                responseLabel.setText(myClient.getMostPopularWord());
             }
             catch(Exception err)
             {
@@ -104,12 +105,14 @@ public class TwitterGUI extends javax.swing.JFrame {
             }
             
             //show stats by calling necessary methods
-            responseLabel.setText("This user's most popular word is: " + myClient.getMostPopularWord() +
-                    ", which appears " + myClient.getFrequencyMax() + " times.");
+            responseLabel.setText("This user's most popular word is: " + 
+            myClient.getMostPopularWord() + ", which appears " +
+            myClient.getFrequencyMax() + " times.");
+//            responseLabel.setText(myClient.getMostPopularWord());
     }//GEN-LAST:event_twitterButtonMouseClicked
 
     private void requestTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_requestTextFieldActionPerformed
-        // TODO add your handling code here:
+    // TODO add your handling code here:
     }//GEN-LAST:event_requestTextFieldActionPerformed
 
     /**

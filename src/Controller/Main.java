@@ -17,8 +17,8 @@ public class Main {
      */
     public static void main(String[] args) {
         // TODO #1
-        TwitterTester myTest = new TwitterTester();
-        myTest.tweetMessage();
+//        TwitterTester myTest = new TwitterTester();
+//        myTest.tweetMessage();
     }
     
 }

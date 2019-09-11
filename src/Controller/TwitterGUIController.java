@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.*;
 import java.io.PrintStream;
 import java.io.*;
+import sun.security.pkcs11.wrapper.Constants;
 import twitter4j.auth.AccessToken;
 import twitter4j.Relationship;
 
@@ -26,6 +27,7 @@ public class TwitterGUIController {
     private Map<String, Integer> frequentHashtags;
     private User userA;
     private User userB;
+    private boolean tooLong;
 
     public TwitterGUIController()
     {
@@ -35,20 +37,6 @@ public class TwitterGUIController {
         tokens = new ArrayList<String>();
         tempTokens = new ArrayList<String>();
         frequentWords = new HashMap<>();
-    }
-
-    public String postTweet(String message)
-    {
-        String statusTextToReturn = "";
-        try
-        {
-            Status status = twitter.updateStatus(message);
-            statusTextToReturn = status.getText();
-        }
-        catch (TwitterException e){
-            System.out.println(e.getErrorMessage());
-        }
-        return statusTextToReturn;
     }
 
     public void findUserStats(String handle) throws TwitterException, IOException
@@ -241,7 +229,7 @@ public class TwitterGUIController {
     /*********** PART 3 **********/
 
     //TODO 10: Create your own method that provides any service you want.
-    public void getHashtagsFrom(String handle)
+    public void getHashtagsFrom (String handle)
     throws TwitterException, IOException
     {
         frequencyMax = 0;
@@ -322,7 +310,6 @@ public class TwitterGUIController {
                 cursor = friendsA.getNextCursor();
                 hasNext = friendsA.hasNext();
             }
-
             List<Long> friendsBList = new ArrayList<>();
             cursor = -1;
             hasNext = true;
@@ -334,9 +321,7 @@ public class TwitterGUIController {
                 cursor = friendsB.getNextCursor();
                 hasNext = friendsB.hasNext();
             }
-
-            List<Long> equalFriends = new ArrayList<>();
-
+            
             // Get intersection
             friendsList.retainAll(friendsBList); 
             //https://docs.oracle.com/javase/7/docs/api/java/util/Set.html
@@ -348,13 +333,14 @@ public class TwitterGUIController {
 //                User friend = twitter.showUser(friendID);
                 User friend = twitter.showUser(friendID);
                 String friendName = friend.getScreenName();
-                friendNames.add(friendName);
+                friendNames.add("@" + friendName);
             }
             return friendNames;
         } 
         catch (TwitterException e) 
         {
-            System.err.println("Twitter is down");
+            System.err.println("One or more of the users you entered have too "
+                    + "many followers");
             return null;
         }
     }
