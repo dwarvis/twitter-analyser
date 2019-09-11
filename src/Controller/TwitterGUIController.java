@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.util.*;
 import java.io.PrintStream;
 import java.io.*;
-import sun.security.pkcs11.wrapper.Constants;
-import twitter4j.auth.AccessToken;
-import twitter4j.Relationship;
 
 public class TwitterGUIController {
     private Twitter twitter;
@@ -139,13 +136,11 @@ public class TwitterGUIController {
     @SuppressWarnings("unchecked")
     private void removeCommonEnglishWords()
     {
-        File wordsFile = new File("commonWords.txt"); 
-  
-//      BufferedReader br = new BufferedReader(new FileReader(commonWordsFile));
-//        
+        File wordsFile = new File("commonWords.txt");        
         try
         {
             Scanner br = new Scanner(new FileReader(wordsFile));
+            //https://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html 
             List <String> commonWordsList = new ArrayList<String>();
             while (br.hasNext()){
     	        commonWordsList.add(br.next());
@@ -203,6 +198,7 @@ public class TwitterGUIController {
     @SuppressWarnings("unchecked")
     private void findMostPopularWord()
     {
+        https://stackoverflow.com/questions/4234985/how-to-for-each-the-hashmap
         for (Map.Entry<String, Integer> entry : frequentWords.entrySet()) {
             if (entry.getValue() > frequencyMax) {
                 frequencyMax = entry.getValue();
@@ -291,11 +287,11 @@ public class TwitterGUIController {
     {
         userA = twitter.getUserTimeline(tagA).get(0).getUser();
         userB = twitter.getUserTimeline(tagB).get(0).getUser();
+        //http://twitter4j.org/oldjavadocs/4.0.0/twitter4j/ResponseList.html
     }
     
     public List<String> mutualConnections()
     {
-        
         try 
         {
             //get followers and followed
@@ -304,6 +300,7 @@ public class TwitterGUIController {
             boolean hasNext = true;
             while (hasNext) {
                 IDs friendsA = twitter.getFriendsIDs(userA.getId(), cursor);
+                //http://twitter4j.org/oldjavadocs/4.0.0/twitter4j/
                 for (long friend : friendsA.getIDs()) {
                     friendsList.add(friend);
                 }
