@@ -198,7 +198,7 @@ public class TwitterGUIController {
     @SuppressWarnings("unchecked")
     private void findMostPopularWord()
     {
-        https://stackoverflow.com/questions/4234985/how-to-for-each-the-hashmap
+        //https://stackoverflow.com/questions/4234985/how-to-for-each-the-hashmap
         for (Map.Entry<String, Integer> entry : frequentWords.entrySet()) {
             if (entry.getValue() > frequencyMax) {
                 frequencyMax = entry.getValue();
